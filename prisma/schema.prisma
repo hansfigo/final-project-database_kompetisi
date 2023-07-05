@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tim {
+  kd_tim         String @id @db.VarChar(10)
+  nama_tim       String
+  asal_institusi String
+  kd_kategori    String @db.VarChar(10)
+  kd_akun        String @db.VarChar(10)
+
+  ketua ketua[]
+
+  kategori kategori @relation(fields: [kd_kategori], references: [kd_kategori])
+  akun     akun     @relation(fields: [kd_akun], references: [kd_akun])
+}
+
+model ketua {
+  kd_ketua String @id  @db.VarChar(10)
+  nim      String @db.VarChar(10)
+  nama     String
+  no_wa    String
+  kd_tim   String @db.VarChar(10)
+
+  anggota anggota[]
+
+  tim tim @relation(fields: [kd_tim], references: [kd_tim])
+}
+
+model anggota {
+  nim  String @id @db.VarChar(10)
+  nama String
+
+  kd_ketua String @db.VarChar(10)
+
+  ketua ketua @relation(fields: [kd_ketua], references: [kd_ketua])
+}
+
+model akun {
+  kd_akun  String @id  @db.VarChar(10)
+  email    String
+  password String
+
+  tim tim[]
+}
+
+model kategori {
+  kd_kategori String @id  @db.VarChar(10)
+  kategori    String
+
+  tim tim[]
+}

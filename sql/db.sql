@@ -38,8 +38,8 @@ CREATE TABLE kategori (
 );
 
 -- menambahkan data ke tabel kategori
-INSERT INTO kategori (kd_kategori, kategori)
- VALUES ('kt-01', 'AI'),('kt-02', 'Mobile App');
+INSERT INTO kategori (kd_kategori, kategori, golongan)
+ VALUES ('kt-01', 'AI', 'mahasiswa'),('kt-02', 'Mobile App', 'umum');
 
 
 -- Menambahkan data ke tabel tim

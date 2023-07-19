@@ -1,3 +1,52 @@
+-- Membuat database db_kompetisi
+CREATE DATABASE db_kompetisi;
+
+-- Tabel 'tim' untuk menyimpan informasi tentang tim
+CREATE TABLE tim (
+  kd_tim VARCHAR(10) PRIMARY KEY,       -- Kode unik untuk setiap tim
+  nama_tim VARCHAR(50),                 -- Nama tim
+  asal_institusi VARCHAR(50),           -- Asal institusi tim
+  email VARCHAR(50),                    -- Alamat email tim
+  password VARCHAR(50),                 -- Kata sandi tim
+  kd_kategori VARCHAR(10)               -- Kode kategori tim
+);
+
+-- Tabel 'peserta' untuk menyimpan informasi tentang peserta
+CREATE TABLE peserta (
+  nim VARCHAR(10) PRIMARY KEY,          -- NIM (Nomor Induk Mahasiswa) peserta
+  nama VARCHAR(50),                     -- Nama peserta
+  posisi VARCHAR(50),                   -- Posisi peserta dalam tim (Ketua/Anggota)
+  kd_tim VARCHAR(10),                   -- Kode tim yang peserta ikuti
+  FOREIGN KEY (kd_tim) REFERENCES tim(kd_tim)  -- Foreign ke tabel 'tim'
+);
+
+-- Tabel 'kategori' untuk menyimpan informasi tentang kategori
+CREATE TABLE kategori (
+  kd_kategori VARCHAR(10) PRIMARY KEY,  -- Kode unik untuk setiap kategori
+  kategori VARCHAR(50),                 -- Nama kategori
+  golongan VARCHAR(50)                  -- Golongan kategori (Mahasiswa/Pelajar/Umum)
+);
+
+-- Tabel 'juri' untuk menyimpan informasi tentang juri
+CREATE TABLE juri (
+  kd_juri VARCHAR(10) PRIMARY KEY,      -- Kode unik untuk setiap juri
+  kd_kategori VARCHAR(10),              -- Kode kategori yang di-juri
+  nama VARCHAR(50),                     -- Nama juri
+  FOREIGN KEY (kd_kategori) REFERENCES kategori(kd_kategori)  -- Foreign ke tabel 'kategori'
+);
+
+-- Tabel 'project' untuk menyimpan informasi tentang project
+CREATE TABLE project (
+  id INT PRIMARY KEY AUTO_INCREMENT,     -- ID unik untuk setiap project (auto-increment)
+  nama VARCHAR(50),                      -- Nama project
+  deskripsi VARCHAR(255),                 -- Deskripsi project (opsional)
+  kd_tim VARCHAR(10),                    -- Kode tim yang project-nya terkait
+  FOREIGN KEY (kd_tim) REFERENCES tim(kd_tim)  -- Foreign ke tabel 'tim'
+);
+
+
+
+
 INSERT INTO tim (kd_tim, nama_tim, asal_institusi, email, password, kd_kategori)
 VALUES
   ('T001', 'Tim 1', 'UGM', 'tim1@example.com', 'password1', 'AI'),
@@ -47,4 +96,29 @@ VALUES
   ('Speech Recognition AI', 'Deskripsi Speech Recognition AI', 'T003'),
   ('E-commerce Mobile App', 'Deskripsi E-commerce Mobile App', 'T004'),
   ('AI Chatbot', 'Deskripsi AI Chatbot', 'T005');
+
+
+SELECT tim.kd_kategori, tim.nama_tim, tim.asal_institusi, kategori.kategori FROM tim
+INNER JOIN kategori ON tim.kd_kategori = kategori.kd_kategori
+WHERE tim.asal_institusi = 'AMIKOM';
+
+SELECT tim.nama_tim, kategori.kategori, kategori.golongan FROM kategori
+RIGHT JOIN tim ON kategori.kd_kategori = tim.kd_kategori
+WHERE kategori.golongan = 'Mahasiswa';
+
+SELECT tim.kd_tim, tim.nama_tim, kategori.kategori, kategori.golongan FROM tim
+LEFT JOIN kategori ON tim.kd_kategori = kategori.kd_kategori
+WHERE kategori.kategori = 'AI'
+
+SELECT tim.nama_tim, COUNT(peserta.nim) AS jumlah_peserta
+FROM tim
+INNER JOIN peserta ON tim.kd_tim = peserta.kd_tim
+GROUP BY tim.nama_tim;
+
+SELECT kategori.kategori, COUNT(tim.kd_tim) AS jumlah_tim
+FROM kategori
+LEFT JOIN tim ON kategori.kd_kategori = tim.kd_kategori
+INNER JOIN peserta ON tim.kd_tim = peserta.kd_tim
+GROUP BY kategori.kategori
+
 
